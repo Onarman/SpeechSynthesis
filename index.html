@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Speech Synthesis</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="https://fav.farm/🔥" />
+</head>
+<body>
+
+    <div class="voiceinator">
+
+      <h1>The Voiceinator</h1>
+
+      <select name="voice" id="voices">
+        <option value="">Select A Voice</option>
+      </select>
+
+      <label for="rate">Rate:</label>
+      <input name="rate" type="range" min="0" max="2" value="1" step="0.25">
+
+      <label for="pitch">Pitch:</label>
+      <input name="pitch" type="range" min="0.25" max="2" step="0.25">
+      <textarea name="text" style="resize: none; overflow: auto;">Hello! I love JavaScript 👍</textarea>
+      <button id="stop">Stop!</button>
+      <button id="speak">Speak</button>
+
+    </div>
+
+<script>
+  const msg = new SpeechSynthesisUtterance();//konuşma hızını, ses yüksekliğini ve ses tonunu ayarlamak için kullanılır.
+  let voices = [];
+  const voicesDropdown = document.querySelector('[name="voice"]');
+  const options = document.querySelectorAll('[type="range"], [name="text"]');
+  const speakButton = document.querySelector('#speak');
+  const stopButton = document.querySelector('#stop');
+
+  msg.text = document.querySelector("[name=text]").value;
+
+
+  function populateVoices (){
+    voices=this.getVoices();
+    voicesDropdown.innerHTML = voices.map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
+    .join("");
+  }
+
+  function setVoice (){
+    msg.voice = voices.find(voice => voice.name === this.value)
+  }
+
+  function toggle (startOver = true){
+    speechSynthesis.cancel();
+    if (startOver){
+      speechSynthesis.speak(msg);
+    }
+  }
+
+  function setOption(){
+    console.log(this.name, this.value);
+    msg[this.name] = this.value;
+    toggle()
+  }
+  speechSynthesis.addEventListener("voiceschanged",populateVoices)
+  voicesDropdown.addEventListener("change", setVoice)
+  options.forEach(option => option.addEventListener("change", setOption))
+
+  speakButton.addEventListener("click",toggle)
+  stopButton.addEventListener("click",()=>toggle(false))
+
+</script>
+
+</body>
+</html>
+
+<!-- The SpeechSynthesis class is a JavaScript API used for speech synthesis on web pages. Other methods that can be used with the SpeechSynthesis class are:
+
+cancel(): Cancels the speech synthesis process if it is currently in progress.
+speak(utterance): Used for speech synthesis of a specific text with the specified speaker and other properties. Before starting to read the text, you need to configure the properties of the utterance object.
+pause(): Temporarily pauses the speech synthesis process.
+resume(): Resumes a paused speech synthesis process.
+getVoices(): Returns a list of available voices on the system.
+These methods are used to control and configure the speech synthesis process. For example, the speak() method allows you to specify the text and other properties to be used for speech synthesis, while the pause() and resume() methods allow you to temporarily pause or continue the speech synthesis process. -->
